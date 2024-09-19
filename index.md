@@ -53,3 +53,20 @@ With this information, we can then setup an RSP TAP service to talk with any Qse
 
 The next plot shows the results for queries executed directly from the RSP Portal service. FrDF_UKDF shows results when the RSP backend is set to the UKDF Qserv instance.
 
+![](./images/tap_time.png)
+
+If we exclude the generally better performance of USDF (and the problem with Query #12 at IDF, removed in the next figure), there are no significant differences in the time necessary to execute and process query between FrDF and FrDF with UKDF Qserv.
+
+![](./images/tap_time_no_outliers.png)
+
+The results don't show a loss in performance when moving from FrDF Qserv to UKDF Qserv and do not indicate a significant impact from network latency on queries. The time for each query is consistent between FrDF and UKDF Qserv. 
+These results seem to confirm that the solution to use UKDF Qserv as the FrDF RSP backend is a viable option. However, there are still some uncertainties about the load on the UKDF Qserv: specifically, how the impact of UKDF users can affect the RSP performance at FrDF and vice versa. This point is currently not measurable and requires further study.
+
+Results for the two FrDF configurations are confirmed also using TAP service for Topcat [3] queries.
+
+![](./images/topcat_vs_portal.png)
+
+We noted, however, an impact not due to the Qserv backend but probably due to the Portal processing of results, affecting the time necessary to display the results: comparing the query time as measured at the level of Qserv and the time measured at the level of the Portal, we sometimes see a noticeable discrepancy as shown in the next figure. 
+
+![](./images/qserv_vs_portal.png)
+
