@@ -74,7 +74,7 @@ Once we switched to UKDF Qserv, we tested the performance by performing a few qu
 
 We also compare the results with IDF and USDF RSP by running the same queries on these instances.
 
- | Index | Query |
+ | Query Index | Query |
  | ----- | ----- |
  | 1     | ``` SELECT diasrc.ra, diasrc.decl, diasrc.diaObjectId, diasrc.diaSourceId, diasrc.filterName, diasrc.midPointTai,scisql_nanojanskyToAbMag(diasrc.psFlux) AS psAbMag,ccdvis.seeing,ccdvis.visitId FROM dp02_dc2_catalogs.DiaSource AS diasrc``` |
  |       |``` JOIN dp02_dc2_catalogs.CcdVisit AS ccdvis ON diasrc.ccdVisitId = ccdvis.ccdVisitIdWHERE CONTAINS(POINT('ICRS', diasrc.ra, diasrc.decl), CIRCLE('ICRS', 67.4579, -44.0802, 0.0010))=1AND diasrc.filterName = 'i'```|
@@ -111,10 +111,10 @@ We also compare the results with IDF and USDF RSP by running the same queries on
  | 14    | # Catalog Queries with the TAP Service notebook|
 
 
-The following table reports the results (in seconds) for the tested requests:
+The following table reports the results (in seconds) for the tested requests, not al the queries have been tested with Topcat:
  
 
- | Index | # sources | Qserv Chunks | Qserv Time | FrDF | FrDF TOPCAT | UKDF | UKDF TOPCAT | IDF | USDF |
+ | Query Index | # Sources | Qserv Chunks | Qserv Time | FrDF | FrDF TOPCAT | UKDF | UKDF TOPCAT | IDF | USDF |
  | ----- | --------- | ------------ | ---------- | ---- | ----------- | ---- | ----------- | --- | ---- |
  | 1     | 15        | 1            | 1          | 2    | 2           | 3    | 3           | 2   | 1    |
  | 2     | 50000     | 6            | 2          | 8    | 14          | 9    | 7           | 6   | 5    |
