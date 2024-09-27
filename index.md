@@ -12,7 +12,11 @@ The FrDF RSP currently uses its own Qserv instance, which is deployed on a Kuber
 
 We are exploring the possibility to use a Qserv instance deployed outside the CC-IN2P3 as backend for the FrDF RSP TAP service.
 
-## RSP and Qserv
+## RSP TAP configuration for  Qserv access
+
+In this section we descrive how to configure TAP in Phalanx to use a Qserv instance. 
+
+### Phalanx TAP configuration
 
 The TAP RSP service can be easily configured to point to a Qserv instance via:
 
@@ -31,11 +35,13 @@ cadc-tap:
       tag: x.y.z
 ```
 
-With this information, we can then setup an RSP TAP service to talk with any Qserv instance.
+In thiw way, we the right settings, we can then setup an RSP TAP service to talk with any Qserv instance.
 
-## TAP Configuration at FrDF
+### TAP Configuration at FrDF
 
-RSP FrDF TAP service was configured to use Qserv instance at CC-IN2P3:
+The  FrDF  RSP is configured to use the FrDF Qserv instance in TAP. 
+
+The configuraton is described in the next block of code: 
 
 ```
 cadc-tap:
@@ -50,7 +56,9 @@ config:
       host: "ccqserv201.in2p3.fr:30040"
 ```
 
-We wanted to test the performance of the TAP service using a remote Qserv instance. For this, we set up the TAP service to point to the UKDF Qserv. This implied a change in the Phalanx configuration but also a change in the UKDF firewall to provide access to the UKDF Qserv from FrDF RSP IPs.
+The configuration point to the FrDF Qserv instance and use as TAP schema image the image tap-schema-ccin2p3 providing the DB schema for all the catalogs ingested in the FrDF Qserv. 
+
+For our test, we wanted check the configuration and the performance of the TAP service using a remote Qserv instance. For this, we set up the TAP service to point to the UKDF Qserv. This implied a change in the Phalanx configuration but also a change in the UKDF firewall to provide access to the UKDF Qserv from FrDF RSP IPs.
 
 Once the problem with the firewall was fixed, the FrDF RSP TAP configuration was changed to:
 
@@ -67,12 +75,10 @@ config:
 
 ## Performance test
 
-Once we switched to UKDF Qserv, we tested the performance by performing a few queries in different ways:
-1. Using the RSP Portal ADQL interface
-2. Using an external service (Topcat)
-3. Using an RSP Nublado notebook
+The main objective was to test the impact on query performance using a remote Qserv instance instead of the local Qserv instance.
+This has been done by performing a set of queries on FrDF RSP using both Qserv instances (FrDF and UKDF) as the backend
 
-We also compare the results with IDF and USDF RSP by running the same queries on these instances.
+The queries used are listed in the following table.  
 
  | Query Index | Query |
  | ----- | ----- |
@@ -111,42 +117,73 @@ We also compare the results with IDF and USDF RSP by running the same queries on
  | 14    | # Catalog Queries with the TAP Service notebook|
 
 
-The following table reports the results (in seconds) for the tested requests, not al the queries have been tested with Topcat:
- 
+The query number 14 listed above is not a single query, but it consists of running [a full notebook](https://github.com/rubin-dp0/tutorial-notebooks/blob/main/DP02_02b_Catalog_Queries_with_TAP.ipynb) provided for the DP0.2 test in RSP Nublado.
 
- | Query Index | # Sources | Qserv Chunks | Qserv Time | FrDF | FrDF TOPCAT | UKDF | UKDF TOPCAT | IDF | USDF |
- | ----- | --------- | ------------ | ---------- | ---- | ----------- | ---- | ----------- | --- | ---- |
- | 1     | 15        | 1            | 1          | 2    | 2           | 3    | 3           | 2   | 1    |
- | 2     | 50000     | 6            | 2          | 8    | 14          | 9    | 7           | 6   | 5    |
- | 3     | 1519      | 1            | 2          | 17   | 10          | 18   | 11          | 17  | 8    |
- | 4     | 200000    | 19           | 6          | 11   |             | 10   |             | 11  | 5    |
- | 5     | 200000    | 19           | 5          | 13   |             | 11   |             | 9   | 8    |
- | 6     | 200000    | 19           | 5          | 11   |             | 12   |             | 12  | 7    |
- | 7     | 500000    | 19           | 8          | 23   | 22          | 24   | 25          | 18  | 12   |
- | 8     | 12        | 11           | 1          | 5    | 3           | 3    | 4           | 3   | 1    |
- | 9     | 432       | 1            | 6          | 9    |             | 9    |             | 3   | 2    |
- | 10    | 14501     | 2            | 136        | 143  | 143         | 159  | 149         | 147 | 84   |
- | 11    | 1         | 1            | 1          | 2    |             | 2    |             | 2   | 1    |
- | 12    | 500000    | 1393         | 27         | 71   |             | 79   |             | 482 | 13   |
- | 13    | 41751     | 19           | 1          | 5    | 3           | 5    | 5           | 16  | 6    |
+The queries against TAP service have been performed in different ways
+
+1. Using the RSP Portal ADQL interface
+2. Using an external service (Topcat) via token provided by the RSP
+3. Using an RSP Nublado notebook for query 14 as described above. 
+
+We also tested the same queries on USDF and IDF RSP (only via ADQL Portal interface). 
 
 
+### Results 
+
+The following table reports the results (in seconds) for the tested requests. Not all the queries have been tested with Topcat and they are marked as NP. 
+The table's columns are the following: 
+
+1. **Query Index** is the identifier of the query as listed in the table above.
+2. **# Sources** is the number of sources retrieved by the query 
+3. **Qserv Chunks** is the number of Qserv chunks scanned by the query
+4. **Qserv Time** is the time needed by Qserv to execute the query as reported by the Qserv dashboard
+5. **FrDF/UKDF Portal** is the time measured by the Portal to perform the query 
+6. **FrDF/UKDF Topcat** is the time needed to perform the query via Topcat
+7. **IDF/USDF** is the time to perform the query via Portal on IDF/USDF instances 
 
 
-The next plot shows the results for queries executed directly from the RSP Portal service. FrDF_UKDF shows results when the RSP backend is set to the UKDF Qserv instance.
+
+
+ | Query Index | # Sources | Qserv Chunks | Qserv Time | FrDF via Portal | FrDF via TOPCAT | UKDF via Portal | UKDF via TOPCAT | IDF | USDF |
+ | :---------: |:--------: | :-----------:| :---------:| :-------------: | :-------------: | :-------------: | :-------------: |:---:|:----:|
+ | 1           | 15        | 1            | 1          | 2               | 2               | 3               | 3               | 2   | 1    |
+ | 2           | 50000     | 6            | 2          | 8               | 14              | 9               | 7               | 6   | 5    |
+ | 3           | 1519      | 1            | 2          | 17              | 10              | 18              | 11              | 17  | 8    |
+ | 4           | 200000    | 19           | 6          | 11              | NP              | 10              | NP              | 11  | 5    |
+ | 5           | 200000    | 19           | 5          | 13              | NP              | 11              | NP              | 9   | 8    |
+ | 6           | 200000    | 19           | 5          | 11              | NP              | 12              | NP              | 12  | 7    |
+ | 7           | 500000    | 19           | 8          | 23              | 22              | 24              | 25              | 18  | 12   |
+ | 8           | 12        | 11           | 1          | 5               | 3               | 3               | 4               | 3   | 1    |
+ | 9           | 432       | 1            | 6          | 9               | NP              | 9               | NP              | 3   | 2    |
+ | 10          | 14501     | 2            | 136        | 143             | 143             | 159             | 149             | 147 | 84   |
+ | 11          | 1         | 1            | 1          | 2               | NP              | 2               | NP              | 2   | 1    |
+ | 12          | 500000    | 1393         | 27         | 71              | NP              | 79              | NP              | 482 | 13   |
+ | 13          | 41751     | 19           | 1          | 5               | 3               | 5               | 5               | 16  | 6    |
+ | 14          | NA        | NA           | NA         |80               | NA              | 78              | NA              | 210 | 48   |
+
+
+### Queries via Portal 
+
+The next plot shows the results for queries executed using ADQL interface dirctly from the RSP Portal service. The RSP instance used are FrDF (with FrDF Qserv and UKDF Qserv as backend), IDF and USDF.
 
 ![](./images/tap_time.png)
 
-If we exclude the generally better performance of USDF (and the problem with Query #12 at IDF, removed in the next figure), there are no significant differences in the time necessary to execute and process query between FrDF and FrDF with UKDF Qserv.
+
+If we exclude the generally better performance of USDF (and the problem with Query #12 at IDF, which was removed in the next figure to improve readability), there are no significant differences in the time necessary to execute and process queries between FrDF and FrDF with UKDF Qserv.
 
 ![](./images/tap_time_no_outliers.png)
 
 The results don't show a loss in performance when moving from FrDF Qserv to UKDF Qserv and do not indicate a significant impact from network latency on queries. The time for each query is consistent between FrDF and UKDF Qserv. 
 These results seem to confirm that the solution to use UKDF Qserv as the FrDF RSP backend is a viable option. However, there are still some uncertainties about the load on the UKDF Qserv: specifically, how the impact of UKDF users can affect the RSP performance at FrDF and vice versa. This point is currently not measurable and requires further study.
 
+
+### Queries via Topcat
+
 Results for the two FrDF configurations are confirmed also using TAP service for Topcat [3] queries.
 
 ![](./images/topcat_vs_portal.png)
+
+### Queries processing 
 
 We noted, however, an impact not due to the Qserv backend but probably due to the Portal processing of results, affecting the time necessary to display the results: comparing the query time as measured at the level of Qserv and the time measured at the level of the Portal, we sometimes see a noticeable discrepancy as shown in the next figure. 
 
