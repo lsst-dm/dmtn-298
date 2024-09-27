@@ -183,6 +183,8 @@ Results for the two FrDF configurations are confirmed also using TAP service for
 
 ![](./images/topcat_vs_portal.png)
 
+### Queries processing 
+
 We noted, however, an impact not due to the Qserv backend but probably due to the Portal processing of results, affecting the time necessary to display the results: comparing the query time as measured at the level of Qserv and the time measured at the level of the Portal, we sometimes see a noticeable discrepancy as shown in the next figure. 
 
 ![](./images/qserv_vs_portal.png)
