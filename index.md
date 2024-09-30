@@ -195,17 +195,29 @@ Results for the two FrDF configurations are confirmed also using TAP service for
 
 ADQL Queries via Topcat using TAP service provided by FrDF RSP configured with FrDF and UKDF Qserv backend.
 ```
-
+The time needed to process a query is almost the same whether the RSP backend is set to point to the FrDF Qserv instance or the UKDF Qserv instance.
 
 
 ### Queries processing 
 
-We noted, however, an impact not due to the Qserv backend but probably due to the Portal's processing of results, affecting the time necessary to display them: comparing the query time as measured at the level of Qserv and the time measured at the level of the Portal, we sometimes see a noticeable discrepancy, as shown in the next figure.
+We noted, however, an impact not due to the Qserv backend but probably due to the 'post-processing' of results by the Portal (and Topcat), affecting the time necessary to display them. Comparing the query time as measured at the level of Qserv and the time measured at the level of the Portal, we sometimes see a noticeable discrepancy, as shown in the next figure.
 
 ```{figure} ./images/qserv_vs_portal.png
 
 Time to process a query at the level of Qserv (as reported by the Qserv dashboard) and at the level of the Portal.
 ```
+
+Topcat is also affected by this 'post-processing' issue but seems a little less impacted than Portal.
+
+## Conclusions
+
+The scope of the test was checking the impact on performance for our RSP (FrDF RSP) when a remote Qserv instance (UKDF) is used as the backend for the TAP service. 
+The first preliminary test seems to exclude a large impact on performance due to, e.g., network latency, load on Qserv, etc. However, we cannot exclude an impact on this aspect when the load on the UKDF Qserv increases. 
+The performance is in line using Portal and Topcat TAP services, but we noted a delay in results showing, probably due to 'post-processing' steps needed by Portal and Topcat to organize the retrieved catalogs.
+
+Further tests are needed to verify these results with a set of more articulated and 'science representative' queries, but for the moment we can confirm the possibility of using a remote Qserv instance as an RSP backend.
+
+
 [^1]: https://dmtn-264.lsst.io/
 [^2]: https://dmtn-243.lsst.io/
 [^3]: https://www.star.bris.ac.uk/~mbt/topcat/
