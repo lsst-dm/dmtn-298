@@ -5,9 +5,9 @@ In this note, we describe the procedure to set up a Qserv instance hosted remote
 ```
 
 ## Introduction
-The Rubin Science Platform (RSP) is a set of web applications providing easy access to Rubin data for interactive analysis. Access to the data is mainly provided by an IVOA Table Access Protocol [1], which provides an interface between the user and the backend catalog database.
+The Rubin Science Platform (RSP) is a set of web applications providing easy access to Rubin data for interactive analysis. Access to the data is mainly provided by an IVOA Table Access Protocol [^1], which provides an interface between the user and the backend catalog database.
 
-The catalog database, in general, is stored on a Qserv instance.
+The catalog database, in general, is stored on a Qserv instance [^2].
 The FrDF RSP currently uses its own Qserv instance, which is deployed on a Kubernetes cluster hosted on local bare-metal machines, and provides access to 4 catalogs with a total of 55TB of data.
 
 We are exploring the possibility to use a Qserv instance deployed outside the CC-IN2P3 as backend for the FrDF RSP TAP service.
@@ -80,6 +80,9 @@ This has been done by performing a set of queries on FrDF RSP using both Qserv i
 
 The queries used are listed in the following table.  
 
+```{rst-class} technote-wide-content
+```
+
  | Query Index | Query |
  | ----- | ----- |
  | 1     | ``` SELECT diasrc.ra, diasrc.decl, diasrc.diaObjectId, diasrc.diaSourceId, diasrc.filterName, diasrc.midPointTai,scisql_nanojanskyToAbMag(diasrc.psFlux) AS psAbMag,ccdvis.seeing,ccdvis.visitId FROM dp02_dc2_catalogs.DiaSource AS diasrc``` |
@@ -142,7 +145,8 @@ The table's columns are the following:
 7. **IDF/USDF** is the time to perform the query via Portal on IDF/USDF instances 
 
 
-
+```{rst-class} technote-wide-content
+```
 
  | Query Index | # Sources | Qserv Chunks | Qserv Time | FrDF via Portal | FrDF via TOPCAT | UKDF via Portal | UKDF via TOPCAT | IDF | USDF |
  | :---------: |:--------: | :-----------:| :---------:| :-------------: | :-------------: | :-------------: | :-------------: |:---:|:----:|
@@ -163,29 +167,45 @@ The table's columns are the following:
 
 
 ### Queries via Portal 
+The next plot shows the results for queries executed using the ADQL interface directly from the RSP Portal service. The queries have been performed via three RSP instances: IDF, USDF, and FrDF. FrDF instances have been configured with FrDF Qserv and UKDF Qserv as backend.
 
-The next plot shows the results for queries executed using ADQL interface dirctly from the RSP Portal service. The RSP instance used are FrDF (with FrDF Qserv and UKDF Qserv as backend), IDF and USDF.
+```{figure} ./images/tap_time.png
 
-![](./images/tap_time.png)
+ADQL Queries via TAP Portal interface for IDF, USDF, and FrDF instances. FrDF RSP configured with FrDF and UKDF Qserv backend.
+```
 
+We note a generally better performance of USDF RSP, but for the other RSP instances, there are no significant differences (excluding query number 12, removed in the next plot, which seems to have some problem with IDF).
 
-If we exclude the generally better performance of USDF (and the problem with Query #12 at IDF, which was removed in the next figure to improve readability), there are no significant differences in the time necessary to execute and process queries between FrDF and FrDF with UKDF Qserv.
+```{figure} ./images/tap_time_no_outliers.png
 
-![](./images/tap_time_no_outliers.png)
+ADQL Queries via TAP Portal interface for IDF, USDF, and FrDF instances. FrDF RSP configured with FrDF and UKDF Qserv backend. Query #12 removed to improve readability.
+```
 
-The results don't show a loss in performance when moving from FrDF Qserv to UKDF Qserv and do not indicate a significant impact from network latency on queries. The time for each query is consistent between FrDF and UKDF Qserv. 
-These results seem to confirm that the solution to use UKDF Qserv as the FrDF RSP backend is a viable option. However, there are still some uncertainties about the load on the UKDF Qserv: specifically, how the impact of UKDF users can affect the RSP performance at FrDF and vice versa. This point is currently not measurable and requires further study.
+For the scope of our exercise, the results do not show a loss in performance when moving from FrDF Qserv to UKDF Qserv, nor do they indicate a significant impact from network latency on queries. The time for each query is consistent between FrDF and UKDF Qserv.
+
+These results seem to confirm that using UKDF Qserv as the FrDF RSP backend is a viable option. 
+However, there are still some uncertainties about the load on the UKDF Qserv: specifically, how the impact of UKDF users can affect the RSP performance at FrDF and vice versa. This point is currently not measurable and requires further study.
 
 
 ### Queries via Topcat
 
-Results for the two FrDF configurations are confirmed also using TAP service for Topcat [3] queries.
+Results for the two FrDF configurations are confirmed also using TAP service for Topcat [^3] queries.
 
-![](./images/topcat_vs_portal.png)
+```{figure} ./images/topcat_vs_portal.png
+
+ADQL Queries via Topcat using TAP service provided by FrDF RSP configured with FrDF and UKDF Qserv backend.
+```
+
+
 
 ### Queries processing 
 
-We noted, however, an impact not due to the Qserv backend but probably due to the Portal processing of results, affecting the time necessary to display the results: comparing the query time as measured at the level of Qserv and the time measured at the level of the Portal, we sometimes see a noticeable discrepancy as shown in the next figure. 
+We noted, however, an impact not due to the Qserv backend but probably due to the Portal's processing of results, affecting the time necessary to display them: comparing the query time as measured at the level of Qserv and the time measured at the level of the Portal, we sometimes see a noticeable discrepancy, as shown in the next figure.
 
-![](./images/qserv_vs_portal.png)
+```{figure} ./images/qserv_vs_portal.png
 
+Time to process a query at the level of Qserv (as reported by the Qserv dashboard) and at the level of the Portal.
+```
+[^1]: https://dmtn-264.lsst.io/
+[^2]: https://dmtn-243.lsst.io/
+[^3]: https://www.star.bris.ac.uk/~mbt/topcat/
