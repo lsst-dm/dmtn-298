@@ -176,7 +176,7 @@ The next plot shows the results for queries executed using the ADQL interface di
 ADQL Queries via TAP Portal interface for IDF, USDF, and FrDF instances. FrDF RSP configured with FrDF and UKDF Qserv backend.
 ```
 
-We note a generally better performance of USDF RSP, but for the other RSP instances, there are no significant differences (excluding query number 12, removed in the next plot, which seems to have some problem with IDF).
+We note a generally better performance of USDF RSP, but for the other RSP instances, there are no significant differences (if we exclude query 12, which seems to have some issues with IDF, and for which we removed the IDF values to make the plot easier to read).
 
 ```{figure} ./images/tap_time_no_outliers.png
 
