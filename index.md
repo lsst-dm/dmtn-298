@@ -14,7 +14,7 @@ We are exploring the possibility to use a Qserv instance deployed outside the CC
 
 ## RSP TAP configuration for  Qserv access
 
-In this section we descrive how to configure TAP in Phalanx to use a Qserv instance. 
+In this section we descrive how to configure TAP in Phalanx to use a Qserv instance.
 
 ### Phalanx TAP configuration
 
@@ -39,9 +39,9 @@ In thiw way, we the right settings, we can then setup an RSP TAP service to talk
 
 ### TAP Configuration at FrDF
 
-The  FrDF  RSP is configured to use the FrDF Qserv instance in TAP. 
+The  FrDF  RSP is configured to use the FrDF Qserv instance in TAP.
 
-The configuraton is described in the next block of code: 
+The configuraton is described in the next block of code:
 
 ```
 cadc-tap:
@@ -56,7 +56,7 @@ config:
       host: "ccqserv201.in2p3.fr:30040"
 ```
 
-The configuration point to the FrDF Qserv instance and use as TAP schema image the image tap-schema-ccin2p3 providing the DB schema for all the catalogs ingested in the FrDF Qserv. 
+The configuration point to the FrDF Qserv instance and use as TAP schema image the image tap-schema-ccin2p3 providing the DB schema for all the catalogs ingested in the FrDF Qserv.
 
 For our test, we wanted check the configuration and the performance of the TAP service using a remote Qserv instance. For this, we set up the TAP service to point to the UKDF Qserv. This implied a change in the Phalanx configuration but also a change in the UKDF firewall to provide access to the UKDF Qserv from FrDF RSP IPs.
 
@@ -78,7 +78,7 @@ config:
 The main objective was to test the impact on query performance using a remote Qserv instance instead of the local Qserv instance.
 This has been done by performing a set of queries on FrDF RSP using both Qserv instances (FrDF and UKDF) as the backend
 
-The queries used are listed in the following table.  
+The queries used are listed in the following table.
 
 ```{rst-class} technote-wide-content
 ```
@@ -87,7 +87,7 @@ The queries used are listed in the following table.
  | ----- | ----- |
  | 1     | ``` SELECT diasrc.ra, diasrc.decl, diasrc.diaObjectId, diasrc.diaSourceId, diasrc.filterName, diasrc.midPointTai,scisql_nanojanskyToAbMag(diasrc.psFlux) AS psAbMag,ccdvis.seeing,ccdvis.visitId FROM dp02_dc2_catalogs.DiaSource AS diasrc``` |
  |       |``` JOIN dp02_dc2_catalogs.CcdVisit AS ccdvis ON diasrc.ccdVisitId = ccdvis.ccdVisitIdWHERE CONTAINS(POINT('ICRS', diasrc.ra, diasrc.decl), CIRCLE('ICRS', 67.4579, -44.0802, 0.0010))=1AND diasrc.filterName = 'i'```|
- | 2     |```SELECT objectId, coord_ra, coord_dec, detect_isPrimary, scisql_nanojanskyToAbMag(g_cModelFlux) as gmag, scisql_nanojanskyToAbMag(i_cModelFlux) as imag,scisql_nanojanskyToAbMag(r_cModelFlux) as rmag,scisql_nanojanskyToAbMagSigma(g_cModelFlux, g_cModelFluxErr) as gmag_err,``` |   
+ | 2     |```SELECT objectId, coord_ra, coord_dec, detect_isPrimary, scisql_nanojanskyToAbMag(g_cModelFlux) as gmag, scisql_nanojanskyToAbMag(i_cModelFlux) as imag,scisql_nanojanskyToAbMag(r_cModelFlux) as rmag,scisql_nanojanskyToAbMagSigma(g_cModelFlux, g_cModelFluxErr) as gmag_err,``` |
  |       | ```scisql_nanojanskyToAbMagSigma(i_cModelFlux, i_cModelFluxErr) as imag_err,scisql_nanojanskyToAbMagSigma(r_cModelFlux, r_cModelFluxErr) as rmag_err```|
  |       |```FROM dp02_dc2_catalogs.ObjectWHERE CONTAINS (POINT('ICRS', coord_ra, coord_dec), CIRCLE('ICRS', 62.0, -37.0, 0.4)) = 1AND detect_isPrimary = 1```|
  | 3     | ```SELECT * FROM dp02_dc2_catalogs.Object WHERE CONTAINS(POINT('ICRS', coord_ra, coord_dec),CIRCLE('ICRS', 63.01804167, -32.87422222, 0.027777777777777776))=1```|
@@ -111,7 +111,7 @@ The queries used are listed in the following table.
  |       |```obj.u_cModelFlux AS obj_u_cModelFlux,obj.g_cModelFlux AS obj_g_cModelFlux,obj.r_cModelFlux AS obj_r_cModelFlux,obj.i_cModelFlux AS obj_i_cModelFlux,obj.z_cModelFlux AS obj_z_cModelFlux,obj.y_cModelFlux AS obj_y_cModelFlux```|
  |       | ```FROM dp02_dc2_catalogs.MatchesTruth AS mt JOIN dp02_dc2_catalogs.TruthSummary AS ts ON mt.id_truth_type=ts.id_truth_type JOIN dp02_dc2_catalogs.Object AS obj ON mt.match_objectId=obj.objectId```|
  |       |```WHERE scisql_s2PtInCircle(obj.coord_ra,obj.coord_dec,62.0,-37.0,0.1)=1 AND ts.truth_type=1 AND obj.detect_isPrimary=1```|
- | 11    | ```SELECT id_truth_type, ra, dec, host_galaxy FROM dp02_dc2_catalogs.TruthSummary WHERE id_truth_type = 'MS_9684_23_3'```| 
+ | 11    | ```SELECT id_truth_type, ra, dec, host_galaxy FROM dp02_dc2_catalogs.TruthSummary WHERE id_truth_type = 'MS_9684_23_3'```|
  | 12    | ```SELECT coord_ra, coord_dec FROM dp02_dc2_catalogs.Object``` |
  |       |```WHERE CONTAINS(POINT('ICRS', coord_ra, coord_dec), POLYGON('ICRS',48.57,-44.63,75.24,-44.63,75.24,-26.78,48.57,-26.78 )) = 1 AND r_extendedness = 1 AND detect_isPrimary = 1 AND scisql_nanojanskyToAbMag(r_cModelFlux) < 21.0```|
  | 13    | ```SELECT fs.forcedSourceId,fs.objectId,fs.ccdVisitId,fs.detect_isPrimary,fs.band,scisql_nanojanskyToAbMag(fs.psfFlux) AS psfMag,ccd.obsStartMJD,scisql_nanojanskyToAbMag(obj.r_psfFlux) AS obj_rpsfMag```|
@@ -126,47 +126,49 @@ The queries against TAP service have been performed in different ways
 
 1. Using the RSP Portal ADQL interface
 2. Using an external service (Topcat) via token provided by the RSP
-3. Using an RSP Nublado notebook for query 14 as described above. 
+3. Using an RSP Nublado notebook for query 14 as described above.
 
-We also tested the same queries on USDF and IDF RSP (only via ADQL Portal interface). 
+We also tested the same queries on USDF and IDF RSP (only via ADQL Portal interface).
 
 
-### Results 
+### Results
 
-The following table reports the results (in seconds) for the tested requests. Not all the queries have been tested with Topcat and they are marked as NP. 
-The table's columns are the following: 
+The following table reports the results (in seconds) for the tested requests. Not all the queries have been tested with Topcat and they are marked as NP.
+The table's columns are the following:
 
 1. **Query Index** is the identifier of the query as listed in the table above.
-2. **# Sources** is the number of sources retrieved by the query 
+2. **# Sources** is the number of sources retrieved by the query
 3. **Qserv Chunks** is the number of Qserv chunks scanned by the query
 4. **Qserv Time** is the time needed by Qserv to execute the query as reported by the Qserv dashboard
-5. **FrDF/UKDF Portal** is the time measured by the Portal to perform the query 
-6. **FrDF/UKDF Topcat** is the time needed to perform the query via Topcat
-7. **IDF/USDF** is the time to perform the query via Portal on IDF/USDF instances 
+5. **FrDF via Portal** is the time measured by the Portal to perform the query
+6. **FrDF via TOPCAT** is the time needed to perform the query via Topcat
+6. **FrDF w/ UKDF Portal** is the time measured by the Portal to perform the query when the FrDF RSP is plugged on UKDF Qserv
+7. **FrDF w/ UKDF Topcat** is the time needed to perform the query via FrDF API Topcat when the FrDF RSP is plugged on UKDF Qserv
+8. **IDF/USDF/UKDF** is the time to perform the query via Portal on IDF/USDF/UKDF RSP instances
 
 
 ```{rst-class} technote-wide-content
 ```
 
- | Query Index | # Sources | Qserv Chunks | Qserv Time | FrDF via Portal | FrDF via TOPCAT | UKDF via Portal | UKDF via TOPCAT | IDF | USDF |
- | :---------: |:--------: | :-----------:| :---------:| :-------------: | :-------------: | :-------------: | :-------------: |:---:|:----:|
- | 1           | 15        | 1            | 1          | 2               | 2               | 3               | 3               | 2   | 1    |
- | 2           | 50000     | 6            | 2          | 8               | 14              | 9               | 7               | 6   | 5    |
- | 3           | 1519      | 1            | 2          | 17              | 10              | 18              | 11              | 17  | 8    |
- | 4           | 200000    | 19           | 6          | 11              | NP              | 10              | NP              | 11  | 5    |
- | 5           | 200000    | 19           | 5          | 13              | NP              | 11              | NP              | 9   | 8    |
- | 6           | 200000    | 19           | 5          | 11              | NP              | 12              | NP              | 12  | 7    |
- | 7           | 500000    | 19           | 8          | 23              | 22              | 24              | 25              | 18  | 12   |
- | 8           | 12        | 11           | 1          | 5               | 3               | 3               | 4               | 3   | 1    |
- | 9           | 432       | 1            | 6          | 9               | NP              | 9               | NP              | 3   | 2    |
- | 10          | 14501     | 2            | 136        | 143             | 143             | 159             | 149             | 147 | 84   |
- | 11          | 1         | 1            | 1          | 2               | NP              | 2               | NP              | 2   | 1    |
- | 12          | 500000    | 1393         | 27         | 71              | NP              | 79              | NP              | 482 | 13   |
- | 13          | 41751     | 19           | 1          | 5               | 3               | 5               | 5               | 16  | 6    |
- | 14          | NA        | NA           | NA         |80               | NA              | 78              | NA              | 210 | 48   |
+| Query Index | # Sources | Qserv Chunks | Qserv Time | FrDF <br> via Portal | FrDF <br> via TOPCAT | FrDF w/ UKDF <br> via Portal | FrDF w/ UKDF <br> via TOPCAT | IDF | USDF | UKDF |
+| :---------: |:--------: | :-----------:| :---------:| :-------------: | :-------------: | :-------------:         | :-------------:         |:---:|:----:|:----:|
+| 1           | 15        | 1            | 1          | 2               | 2               | 3                       | 3                       | 2   | 1    | 4    |
+| 2           | 50000     | 6            | 2          | 8               | 14              | 9                       | 7                       | 6   | 5    | 8    |
+| 3           | 1519      | 1            | 2          | 17              | 10              | 18                      | 11                      | 17  | 8    | 14   |
+| 4           | 200000    | 19           | 6          | 11              | NP              | 10                      | NP                      | 11  | 5    | 7    |
+| 5           | 200000    | 19           | 5          | 13              | NP              | 11                      | NP                      | 9   | 8    | 10   |
+| 6           | 200000    | 19           | 5          | 11              | NP              | 12                      | NP                      | 12  | 7    | 10   |
+| 7           | 500000    | 19           | 8          | 23              | 22              | 24                      | 25                      | 18  | 12   | 18   |
+| 8           | 12        | 11           | 1          | 5               | 3               | 3                       | 4                       | 3   | 1    | 3    |
+| 9           | 432       | 1            | 6          | 9               | NP              | 9                       | NP                      | 3   | 2    | 18   |
+| 10          | 14501     | 2            | 136        | 143             | 143             | 159                     | 149                     | 147 | 84   | 149  |
+| 11          | 1         | 1            | 1          | 2               | NP              | 2                       | NP                      | 2   | 1    | 4    |
+| 12          | 500000    | 1393         | 27         | 71              | NP              | 79                      | NP                      | 482 | 13   | 39   |
+| 13          | 41751     | 19           | 1          | 5               | 3               | 5                       | 5                       | 16  | 6    | 4    |
+| 14          | NA        | NA           | NA         |80               | NA              | 78                      | NA                      | 210 | 48   | NA   |
 
 
-### Queries via Portal 
+### Queries via Portal
 The next plot shows the results for queries executed using the ADQL interface directly from the RSP Portal service. The queries have been performed via three RSP instances: IDF, USDF, and FrDF. FrDF instances have been configured with FrDF Qserv and UKDF Qserv as backend.
 
 ```{figure} ./images/tap_time.png
@@ -183,7 +185,7 @@ ADQL Queries via TAP Portal interface for IDF, USDF, and FrDF instances. FrDF RS
 
 For the scope of our exercise, the results do not show a loss in performance when moving from FrDF Qserv to UKDF Qserv, nor do they indicate a significant impact from network latency on queries. The time for each query is consistent between FrDF and UKDF Qserv.
 
-These results seem to confirm that using UKDF Qserv as the FrDF RSP backend is a viable option. 
+These results seem to confirm that using UKDF Qserv as the FrDF RSP backend is a viable option.
 However, there are still some uncertainties about the load on the UKDF Qserv: specifically, how the impact of UKDF users can affect the RSP performance at FrDF and vice versa. This point is currently not measurable and requires further study.
 
 
@@ -198,7 +200,7 @@ ADQL Queries via Topcat using TAP service provided by FrDF RSP configured with F
 The time needed to process a query is almost the same whether the RSP backend is set to point to the FrDF Qserv instance or the UKDF Qserv instance.
 
 
-### Queries processing 
+### Queries processing
 
 We noted, however, an impact not due to the Qserv backend but probably due to the 'post-processing' of results by the Portal (and Topcat), affecting the time necessary to display them. Comparing the query time as measured at the level of Qserv and the time measured at the level of the Portal, we sometimes see a noticeable discrepancy, as shown in the next figure.
 
@@ -211,8 +213,8 @@ Topcat is also affected by this 'post-processing' issue but seems a little less 
 
 ## Conclusions
 
-The scope of the test was checking the impact on performance for our RSP (FrDF RSP) when a remote Qserv instance (UKDF) is used as the backend for the TAP service. 
-The first preliminary test seems to exclude a large impact on performance due to, e.g., network latency, load on Qserv, etc. However, we cannot exclude an impact on this aspect when the load on the UKDF Qserv increases. 
+The scope of the test was checking the impact on performance for our RSP (FrDF RSP) when a remote Qserv instance (UKDF) is used as the backend for the TAP service.
+The first preliminary test seems to exclude a large impact on performance due to, e.g., network latency, load on Qserv, etc. However, we cannot exclude an impact on this aspect when the load on the UKDF Qserv increases.
 The performance is in line using Portal and Topcat TAP services, but we noted a delay in results showing, probably due to 'post-processing' steps needed by Portal and Topcat to organize the retrieved catalogs.
 
 Further tests are needed to verify these results with a set of more articulated and 'science representative' queries, but for the moment we can confirm the possibility of using a remote Qserv instance as an RSP backend.
